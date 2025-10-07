@@ -3,11 +3,8 @@ local args = {...}
 
 spawn(function()
 	local TweenService = game:GetService("TweenService")
-	local RunService = game:GetService("RunService")
 	local LocalPlayer = game:GetService("Players").LocalPlayer
-	local Mouse = LocalPlayer:GetMouse()
 
-	-- ฟังก์ชันโหลดโลโก้
 	local getLogo = function()
 		if getcustomasset and writefile then
 			if isfile("NormalLogo.png") then
@@ -86,7 +83,7 @@ spawn(function()
 	Frame.Size = UDim2.new(0, 55, 0, 55)
 	Frame.ZIndex = 99999
 
-	UICorner.CornerRadius = UDim.new(1, 0) -- ทำให้กลม
+	UICorner.CornerRadius = UDim.new(1, 0)
 	UICorner.Parent = Frame
 
 	ImageButton.Parent = Frame
@@ -99,9 +96,18 @@ spawn(function()
 
 	local focus = false
 
+	local function SetUIVisibility(ui, visible)
+		for _, v in pairs(ui:GetDescendants()) do
+			if v:IsA("GuiObject") then
+				v.Visible = visible
+			end
+		end
+		ui.Visible = visible
+	end
+
 	ImageButton.MouseButton1Click:Connect(function()
 		focus = not focus
-		RoyXUi.Enabled = not focus
+		SetUIVisibility(RoyXUi, not focus)
 		TweenService:Create(Frame, TweenInfo.new(0.2), {
 			BackgroundColor3 = focus and Color3.fromRGB(200, 60, 60) or Color3.fromRGB(25, 25, 25)
 		}):Play()
