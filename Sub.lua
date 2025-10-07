@@ -1,17 +1,12 @@
 local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-local Players = game:GetService("Players")
-local CoreGui = game:GetService("CoreGui")
-local ContextActionService = game:GetService("ContextActionService")
-
 local args = {...}
-local RoyXUi = args[1]
-if not RoyXUi then return end
 
 spawn(function()
-	local LocalPlayer = Players.LocalPlayer
+	local TweenService = game:GetService("TweenService")
+	local LocalPlayer = game:GetService("Players").LocalPlayer
 
-	local function getLogo()
+	-- ฟังก์ชันโหลดโลโก้
+	local getLogo = function()
 		if getcustomasset and writefile then
 			if isfile("NormalLogo.png") then
 				delfile("NormalLogo.png")
@@ -24,7 +19,8 @@ spawn(function()
 	end
 
 	local function MakeDraggable(topbarobject, object)
-		local Dragging, DragInput, DragStart, StartPosition
+		local Dragging, DragInput, DragStart, StartPosition = nil, nil, nil, nil
+
 		local function Update(input)
 			local Delta = input.Position - DragStart
 			local pos = UDim2.new(
@@ -35,6 +31,7 @@ spawn(function()
 			)
 			TweenService:Create(object, TweenInfo.new(0.2), {Position = pos}):Play()
 		end
+
 		topbarobject.InputBegan:Connect(function(input)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 				Dragging = true
@@ -47,11 +44,13 @@ spawn(function()
 				end)
 			end
 		end)
+
 		topbarobject.InputChanged:Connect(function(input)
 			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
 				DragInput = input
 			end
 		end)
+
 		UserInputService.InputChanged:Connect(function(input)
 			if input == DragInput and Dragging then
 				Update(input)
@@ -59,6 +58,10 @@ spawn(function()
 		end)
 	end	
 
+	local RoyXUi = args[1]
+	if not RoyXUi then return end
+
+	local CoreGui = game:GetService("CoreGui")
 	if CoreGui:FindFirstChild("CloseUI") then
 		CoreGui:FindFirstChild("CloseUI"):Destroy()
 	end
@@ -71,18 +74,17 @@ spawn(function()
 	ScreenGui.Name = "CloseUI"
 	ScreenGui.Parent = CoreGui
 	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-	ScreenGui.DisplayOrder = 10
+	ScreenGui.DisplayOrder = 1000
 
 	Frame.Parent = ScreenGui
 	Frame.Active = true
 	Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-	Frame.BackgroundTransparency = 1
 	Frame.BorderSizePixel = 0
 	Frame.Position = UDim2.new(0.08, 0, 0.08, 0)
 	Frame.Size = UDim2.new(0, 55, 0, 55)
 	Frame.ZIndex = 99999
 
-	UICorner.CornerRadius = UDim.new(1, 0)
+	UICorner.CornerRadius = UDim.new(1, 0) -- ทำให้กลม
 	UICorner.Parent = Frame
 
 	ImageButton.Parent = Frame
@@ -93,11 +95,23 @@ spawn(function()
 
 	MakeDraggable(ImageButton, Frame)
 
+	local focus = false
+
+	local function SetUIVisibility(ui, visible)
+		for _, v in pairs(ui:GetDescendants()) do
+			if v:IsA("GuiObject") then
+				v.Visible = visible
+			end
+		end
+		ui.Visible = visible
+	end
+
 	ImageButton.MouseButton1Click:Connect(function()
-		local inputObject = {
-			UserInputType = Enum.UserInputType.Keyboard,
-			KeyCode = Enum.KeyCode.LeftControl
-		}
-		UserInputService.InputBegan:Fire(inputObject, false)
+		focus = not focus
+		game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.LeftControl, false, game)
+		game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.LeftControl, false, game)
+		TweenService:Create(Frame, TweenInfo.new(0.2), {
+			BackgroundColor3 = focus and Color3.fromRGB(200, 60, 60) or Color3.fromRGB(25, 25, 25)
+		}):Play()
 	end)
 end)
