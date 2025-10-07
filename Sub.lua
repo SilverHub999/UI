@@ -70,11 +70,12 @@ spawn(function()
 	ScreenGui.Name = "CloseUI"
 	ScreenGui.Parent = CoreGui
 	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-	ScreenGui.DisplayOrder = 1000
+	ScreenGui.DisplayOrder = 10
 
 	Frame.Parent = ScreenGui
 	Frame.Active = true
 	Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+	Frame.BackgroundTransparency = 1
 	Frame.BorderSizePixel = 0
 	Frame.Position = UDim2.new(0.08, 0, 0.08, 0)
 	Frame.Size = UDim2.new(0, 55, 0, 55)
@@ -101,6 +102,7 @@ spawn(function()
 			RoyXUi.Visible = not focus
 		end
 		TweenService:Create(Frame, TweenInfo.new(0.2), {
+			BackgroundTransparency = focus and 0 or 1,
 			BackgroundColor3 = focus and Color3.fromRGB(200, 60, 60) or Color3.fromRGB(25, 25, 25)
 		}):Play()
 	end)
