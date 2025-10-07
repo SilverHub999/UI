@@ -2,6 +2,7 @@ local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
+local ContextActionService = game:GetService("ContextActionService")
 
 local args = {...}
 local RoyXUi = args[1]
@@ -92,18 +93,11 @@ spawn(function()
 
 	MakeDraggable(ImageButton, Frame)
 
-	local focus = false
-
 	ImageButton.MouseButton1Click:Connect(function()
-		focus = not focus
-		if RoyXUi:IsA("ScreenGui") then
-			RoyXUi.Enabled = not focus
-		elseif RoyXUi:IsA("Frame") then
-			RoyXUi.Visible = not focus
-		end
-		TweenService:Create(Frame, TweenInfo.new(0.2), {
-			BackgroundTransparency = focus and 0 or 1,
-			BackgroundColor3 = focus and Color3.fromRGB(200, 60, 60) or Color3.fromRGB(25, 25, 25)
-		}):Play()
+		local inputObject = {
+			UserInputType = Enum.UserInputType.Keyboard,
+			KeyCode = Enum.KeyCode.LeftControl
+		}
+		UserInputService.InputBegan:Fire(inputObject, false)
 	end)
 end)
